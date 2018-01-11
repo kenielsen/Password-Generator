@@ -1,5 +1,10 @@
 from tkinter import *
 from password_generation import count_words, count_combos
+from enum import Enum
+
+class Type(Enum):
+    WORD = 1
+    PASSWORD = 2
 
 ABOUT_TEXT = "A simple application to manage passwords.\n"+\
                 "{0}2018 Kristen Nielsen".format(u"\u00A9") +\
@@ -39,7 +44,7 @@ class PasswordGenerationApp(Frame):
         password_menu.add_command(label="New Password")
 
         word_list_menu = Menu(menu, tearoff=0)
-        word_list_menu.add_command(label="List Words")
+        word_list_menu.add_command(label="List Words", command=self.word_list_list_screen)
         word_list_menu.add_command(label="Modify List")
 
         file_menu = Menu(menu, tearoff=0)
@@ -70,7 +75,7 @@ class PasswordGenerationApp(Frame):
         self._current_page="password_main"
 
         self._add_full_width_button("Count Passwords Used", 14,
-                                    self.count_passwords)
+                                    lambda: self.count(Type.PASSWORD))
         self._add_full_width_button("View Password", 14)
         self._add_full_width_button("New Password", 14)
         
@@ -81,8 +86,10 @@ class PasswordGenerationApp(Frame):
         self._set_title("Word List Manipulation")
         self._current_page="word_list_main"
 
-        self._add_full_width_button("Count Words", 14, self.count_words)
-        self._add_full_width_button("List Words", 14, self.word_list_list_screen)
+        self._add_full_width_button("Count Words", 14,
+                                    lambda:self.count(Type.WORD))
+        self._add_full_width_button("List Words", 14,
+                                    self.word_list_list_screen)
         self._add_full_width_button("Modify Words", 14)
         
         self._add_full_width_button("Return to Main", 14, self.main_screen)
@@ -96,18 +103,22 @@ class PasswordGenerationApp(Frame):
         Entry(f, textvariable=self._input1_var).pack(side=LEFT)
         Button(f, text="Add", command=lambda:self.add_word(self._input1_var.get())).pack(side=LEFT)
         f.pack(fill=BOTH, expand=1)
-        self._add_full_width_button("Back", 12, self.word_list_main_screen)
+        self._add_full_width_button("Back", 13, self.word_list_main_screen)
 
     def about(self):
         Popup(self, "About", ABOUT_TEXT)
 
-    def count_words(self):
-        num = count_words()
-        Popup(self, "Number of Words", "There are %d words in the list" % num)
-
-    def count_passwords(self):
-        num = count_combos()
-        Popup(self, "Number of Passwords", "You have used %d passwords" % num)
+    def count(self, countType):
+        num = 0
+        title = ""
+        form = "%d"
+        if countType == Type.WORD:
+            num = count_words()
+            title, form = "Number of Words", "There are %d words in the list"
+        elif countType == Type.PASSWORD:
+            num = count_combos()
+            title, form = "Number of Passwords", "You have used %d passwords"
+        Popup(self, title, form % num)
 
     def add_word(self, word):
         pass
