@@ -10,6 +10,7 @@ class PasswordGenerationApp(Frame):
         Frame.__init__(self, master, width=500, height=300)
         self.master = master
         self._title_var = StringVar()
+        self._input1_var = StringVar()
         self._current_page=""
         self.init_window()
 
@@ -81,10 +82,21 @@ class PasswordGenerationApp(Frame):
         self._current_page="word_list_main"
 
         self._add_full_width_button("Count Words", 14, self.count_words)
-        self._add_full_width_button("List Words", 14)
+        self._add_full_width_button("List Words", 14, self.word_list_list_screen)
         self._add_full_width_button("Modify Words", 14)
         
         self._add_full_width_button("Return to Main", 14, self.main_screen)
+
+    def word_list_list_screen(self):
+        self._clear_content()
+        self._set_title("Word List View")
+        self._current_page="word_list_list"
+        f = Frame(self.content)
+        Label(f, text="Enter a word to add:").pack(side=LEFT)
+        Entry(f, textvariable=self._input1_var).pack(side=LEFT)
+        Button(f, text="Add", command=lambda:self.add_word(self._input1_var.get())).pack(side=LEFT)
+        f.pack(fill=BOTH, expand=1)
+        self._add_full_width_button("Back", 12, self.word_list_main_screen)
 
     def about(self):
         Popup(self, "About", ABOUT_TEXT)
@@ -96,6 +108,9 @@ class PasswordGenerationApp(Frame):
     def count_passwords(self):
         num = count_combos()
         Popup(self, "Number of Passwords", "You have used %d passwords" % num)
+
+    def add_word(self, word):
+        pass
 
     def _add_full_width_button(self, text, font_size, command=None):
         button = Button(self.content,text = text,
