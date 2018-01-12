@@ -77,12 +77,16 @@ def get_words():
 
 def delete_word(word):
     words = read_file_to_list(WORD_FILE)
-    if word in words:
+    if isinstance(word, str) and word in words:
         del words[words.index(word)]
+    elif isinstance(word, int) and word < len(words) and word >= 0:
+        del words[word]
+    else: return False
     f = open(WORD_FILE, 'w')
     for w in words:
         f.write(w+'\n')
     f.close()
+    return True
 
 def add_word(word):
     words = read_file_to_list(WORD_FILE)
